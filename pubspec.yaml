@@ -1,5 +1,5 @@
-name: space_sculpt
-description: "6002CEM"
+name: space_sculpt_mobile_app
+description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.7.2
+  sdk: '>=3.4.3 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -28,13 +28,34 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  toastification: ^2.0.0
   flutter:
     sdk: flutter
+  provider: ^5.0.0
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
-  firebase_core: ^3.13.0
+  cupertino_icons: ^1.0.6
+  firebase_core: ^3.1.0
+  firebase_auth: ^5.1.2
+  firebase_database: ^11.0.3
+  firebase_storage: ^12.1.1
+  path: ^1.9.0
+  image_picker: ^1.1.2
+  intl: ^0.19.0
+  carousel_slider: ^4.2.1
+  model_viewer_plus: ^1.8.0
+  webview_flutter: ^4.8.0
+  google_place: ^0.4.7
+  google_maps_flutter: ^2.7.0
+  toggle_switch: ^2.3.0
+  http: ^0.13.6
+  google_maps_webservice: ^0.0.20-nullsafety.5
+  arcore_flutter_plugin: ^0.1.0
+  path_provider: ^2.1.4
+  flutter_speed_dial: ^7.0.0
+  ar_flutter_plugin_updated: ^0.0.1
 
 dev_dependencies:
   flutter_test:
@@ -45,7 +66,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^5.0.0
+  flutter_lints: ^3.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -59,32 +80,35 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - lib/src/assets/Space_Sculpt_Logo_nobg.png
+    - lib/src/assets/Landing_Header_Image.png
+    - lib/src/assets/Landing_Header_Image.jpg
+    - lib/src/assets/Landing_Header_Image_no_bg.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/to/resolution-aware-images
+  # https://flutter.dev/assets-and-images/#resolution-aware
 
   # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/to/asset-from-package
+  # https://flutter.dev/assets-and-images/#from-packages
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
+  fonts:
+    - family: Poppins_Regular
+      fonts:
+        - asset: lib/src/assets/fonts/Poppins-Regular.ttf
+    - family: Poppins_Bold
+      fonts:
+        - asset: lib/src/assets/fonts/Poppins-Bold.ttf
+    - family: Poppins_Medium
+      fonts:
+        - asset: lib/src/assets/fonts/Poppins-Medium.ttf
+    - family: Poppins_SemiBold
+      fonts:
+        - asset: lib/src/assets/fonts/Poppins-SemiBold.ttf
   # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package
+  # see https://flutter.dev/custom-fonts/#from-packages

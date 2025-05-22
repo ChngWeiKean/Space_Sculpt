@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBtV_yXKb076VPi24FcSaS7sLTOLC_KSuI',
-    appId: '1:12751064898:android:5cc770539a7014df2c42db',
+    appId: '1:12751064898:android:ecdec89af0e4b2472c42db',
     messagingSenderId: '12751064898',
     projectId: 'space-sculpt',
     databaseURL: 'https://space-sculpt-default-rtdb.asia-southeast1.firebasedatabase.app',
@@ -60,12 +60,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDfUmj-vHFvd54OyT73kt2DHxr_SibznBk',
-    appId: '1:12751064898:ios:b7d1b25449ffc0c22c42db',
+    appId: '1:12751064898:ios:28c7585fcf314c832c42db',
     messagingSenderId: '12751064898',
     projectId: 'space-sculpt',
     databaseURL: 'https://space-sculpt-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'space-sculpt.appspot.com',
-    iosBundleId: 'com.example.spaceSculpt',
+    iosBundleId: 'com.example.spaceSculptMobileApp',
   );
 
 }
