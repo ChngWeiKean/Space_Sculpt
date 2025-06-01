@@ -3,7 +3,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:space_sculpt_mobile_app/src/widgets/title.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-// import 'package:timelines/timelines.dart';
 import '../../../colors.dart';
 import '../../../routes.dart';
 
@@ -37,7 +36,7 @@ class _DeliveryOrderStatusState extends State<DeliveryOrderStatus> {
   }
 
   Future<void> _fetchData() async {
-    Future.wait([
+    await Future.wait([
       _fetchOrderData(),
       _fetchUserData(),
     ]);
@@ -93,35 +92,36 @@ class _DeliveryOrderStatusState extends State<DeliveryOrderStatus> {
       case 'Completed':
         return 'The order is completed.';
       default:
-        return 'Unknown status.';
+        return 'Preparing the order for delivery.';
     }
   }
 
   String _getCurrentStatus(Map<dynamic, dynamic> status) {
-    if (status['Completed'] != null) return 'Completed';
-    if (status['Resolved'] != null) return 'Resolved';
-    if (status['OnHold'] != null) return 'On Hold';
-    if (status['Arrived'] != null) return 'Arrived';
-    if (status['Shipping'] != null) return 'Shipping';
-    if (status['ReadyForShipping'] != null) return 'Ready For Shipping';
-    if (status['Pending'] != null) return 'Pending';
-    return 'Unknown';
-  }
+    if (status == null) return 'Pending';
 
-  String _getDetailedStatusDescription(Map<dynamic, dynamic> status) {
-    final String currentStatus = _getCurrentStatus(status);
-    final DateFormat formatter = DateFormat('dd MMM');
-    String date = '';
+    // Sort statuses by date (newest first)
+    final sortedKeys = status.keys.toList()..sort((a, b) {
+      final aDate = DateTime.parse(status[a]);
+      final bDate = DateTime.parse(status[b]);
+      return bDate.compareTo(aDate);
+    });
 
-    if (status[currentStatus] != null) {
-      final DateTime dateTime = DateTime.parse(status[currentStatus]);
-      date = formatter.format(dateTime);
-    } else if (currentStatus == 'Ready For Shipping') {
-      final DateTime dateTime = DateTime.parse(status['ReadyForShipping']);
-      date = formatter.format(dateTime);
+    // Check status in priority order
+    for (var key in sortedKeys) {
+      if (key == 'Completed') return 'Completed';
+      if (key == 'Resolved') return 'Resolved';
+      if (key == 'OnHold') return 'On Hold';
+      if (key == 'Arrived') return 'Arrived';
+      if (key == 'Shipping') return 'Shipping';
+      if (key == 'ReadyForShipping') return 'Ready For Shipping';
+      if (key == 'Pending') return 'Pending';
     }
 
-    switch (currentStatus) {
+    return 'Pending';
+  }
+
+  String _getDetailedStatusDescription(String status, String date) {
+    switch (status) {
       case 'Pending':
         return '$date - The order is being processed. Please be ready to pick it up for delivery soon.';
       case 'Ready For Shipping':
@@ -137,123 +137,169 @@ class _DeliveryOrderStatusState extends State<DeliveryOrderStatus> {
       case 'Completed':
         return '$date - The delivery has been completed successfully. Thank you for ensuring the customer received their order.';
       default:
-        return 'The current status of this order is unknown. Please check the order details or contact support for more information.';
+        return '$date - Preparing the order for delivery.';
     }
   }
 
-  // List<Widget> _buildTimeline() {
-  //   final Map<String, String> baseStatuses = {
-  //     'Pending': 'Order Placed',
-  //     'ReadyForShipping': 'Ready For Shipping',
-  //     'Shipping': 'Shipped',
-  //     'Arrived': 'Delivered',
-  //   };
-  //
-  //   final DateFormat formatter = DateFormat('dd MMM yyyy hh:mm a');
-  //   final Map<String, String> statuses = Map.from(baseStatuses);
-  //
-  //   if (_orderData!['completion_status']['Resolved'] != null) {
-  //     statuses['Resolved'] = 'Resolved';
-  //   }
-  //
-  //   if (_orderData!['completion_status']['OnHold'] != null) {
-  //     statuses['OnHold'] = 'On Hold';
-  //   } else {
-  //     statuses['Completed'] = 'Completed';
-  //   }
-  //
-  //   return statuses.keys.map((statusKey) {
-  //     String displayStatus = statuses[statusKey]!;
-  //     String date = '';
-  //     bool hasTimestamp = _orderData!['completion_status'][statusKey] != null;
-  //
-  //     if (hasTimestamp) {
-  //       final DateTime dateTime = DateTime.parse(_orderData!['completion_status'][statusKey]);
-  //       date = formatter.format(dateTime);
-  //     }
-  //
-  //     return TimelineTile(
-  //       nodeAlign: TimelineNodeAlign.start,
-  //       contents: Container(
-  //         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           mainAxisAlignment: MainAxisAlignment.start,
-  //           children: [
-  //             Row(
-  //                 mainAxisAlignment: MainAxisAlignment.start,
-  //                 children: [
-  //                   Text(
-  //                     displayStatus,
-  //                     style: const TextStyle(
-  //                       color: Colors.black,
-  //                       fontSize: 13.0,
-  //                       fontFamily: 'Poppins_Bold',
-  //                     ),
-  //                   ),
-  //                   const SizedBox(width: 10),
-  //                   Text(
-  //                     date,
-  //                     style: TextStyle(
-  //                       color: Colors.grey[700],
-  //                       fontSize: 13.0,
-  //                       fontFamily: 'Poppins_Bold',
-  //                     ),
-  //                   ),
-  //                 ]
-  //             ),
-  //             const SizedBox(height: 5),
-  //             if (hasTimestamp)
-  //               Text(
-  //                 _getDetailedStatusDescription({statusKey: _orderData!['completion_status'][statusKey]}),
-  //                 style: const TextStyle(
-  //                   color: Colors.black,
-  //                   fontSize: 11.0,
-  //                   fontFamily: 'Poppins_Regular',
-  //                 ),
-  //               ),
-  //             if (!hasTimestamp)
-  //               const SizedBox(
-  //                 height: 60.0, // Ensure the height remains consistent
-  //               ),
-  //           ],
-  //         ),
-  //       ),
-  //       node: TimelineNode(
-  //         indicator: DotIndicator(
-  //           color: hasTimestamp ? AppColors.secondary : Colors.grey,
-  //           size: 16.0,
-  //         ),
-  //         startConnector: statuses.keys.first == statusKey
-  //             ? null
-  //             : hasTimestamp
-  //             ? DecoratedLineConnector(
-  //           decoration: BoxDecoration(
-  //             gradient: LinearGradient(
-  //               begin: Alignment.topCenter,
-  //               end: Alignment.bottomCenter,
-  //               colors: [Colors.blue, Colors.lightBlueAccent[400]!],
-  //             ),
-  //           ),
-  //         )
-  //             : const SolidLineConnector(color: Colors.grey),
-  //         endConnector: statuses.keys.last == statusKey
-  //             ? null
-  //             : hasTimestamp
-  //             ? DecoratedLineConnector(
-  //           decoration: BoxDecoration(
-  //             gradient: LinearGradient(
-  //               begin: Alignment.topCenter,
-  //               end: Alignment.bottomCenter,
-  //               colors: [Colors.blue, Colors.lightBlueAccent[400]!],
-  //             ),
-  //           ),
-  //         )
-  //             : const SolidLineConnector(color: Colors.grey),
-  //       ),
-  //     );
-  //   }).toList();
-  // }
+  Widget _buildTimelineItem({
+    required String status,
+    required String date,
+    required bool isActive,
+    required bool isFirst,
+    required bool isLast,
+    bool isProblem = false,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            if (!isFirst)
+              Container(
+                width: 2,
+                height: 20,
+                color: isActive
+                    ? isProblem ? Colors.red : AppColors.secondary
+                    : Colors.grey[300],
+              ),
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isActive
+                    ? isProblem ? Colors.red : AppColors.secondary
+                    : Colors.grey[300],
+                border: Border.all(
+                  color: Colors.white,
+                  width: 3,
+                ),
+              ),
+              child: isActive
+                  ? Icon(
+                isProblem ? Icons.warning : Icons.check,
+                size: 12,
+                color: Colors.white,
+              )
+                  : null,
+            ),
+            if (!isLast)
+              Container(
+                width: 2,
+                height: 20,
+                color: isActive
+                    ? isProblem ? Colors.red : AppColors.secondary
+                    : Colors.grey[300],
+              ),
+          ],
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                status,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: isActive ? Colors.black : Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                date,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isActive ? Colors.grey[600] : Colors.grey[400],
+                ),
+              ),
+              if (isActive)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    _getDetailedStatusDescription(status, date),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCustomTimeline() {
+    if (_orderData == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final statusMap = _orderData!['completion_status'] as Map<dynamic, dynamic>? ?? {};
+    final DateFormat formatter = DateFormat('dd MMM yyyy');
+
+    // Define all possible statuses in order
+    const allStatuses = [
+      {'key': 'Pending', 'title': 'Order Placed'},
+      {'key': 'ReadyForShipping', 'title': 'Ready For Shipping'},
+      {'key': 'Shipping', 'title': 'Shipped'},
+      {'key': 'Arrived', 'title': 'Delivered'},
+      {'key': 'OnHold', 'title': 'On Hold'},
+      {'key': 'Resolved', 'title': 'Resolved'},
+      {'key': 'Completed', 'title': 'Completed'},
+    ];
+
+    // Determine the current active status
+    final currentStatus = _getCurrentStatus(statusMap);
+
+    return Column(
+      children: allStatuses.map((status) {
+        final statusKey = status['key']!;
+        final statusTitle = status['title']!;
+        final hasStatus = statusMap[statusKey] != null;
+
+        // Fix: Check if this is the highest completed status
+        bool isActive = false;
+        if (currentStatus == 'Completed' && statusKey == 'Completed') {
+          isActive = true;
+        } else if (currentStatus == 'Resolved' && statusKey == 'Resolved') {
+          isActive = true;
+        } else if (currentStatus == 'On Hold' && statusKey == 'OnHold') {
+          isActive = true;
+        } else if (currentStatus == 'Arrived' && statusKey == 'Arrived') {
+          isActive = true;
+        } else if (currentStatus == 'Shipping' && statusKey == 'Shipping') {
+          isActive = true;
+        } else if (currentStatus == 'Ready For Shipping' && statusKey == 'ReadyForShipping') {
+          isActive = true;
+        } else if (currentStatus == 'Pending' && statusKey == 'Pending') {
+          isActive = true;
+        }
+
+        final isProblem = statusKey == 'OnHold';
+        final date = hasStatus
+            ? formatter.format(DateTime.parse(statusMap[statusKey]))
+            : '';
+
+        // Only show status if it exists or is the current status
+        if (hasStatus || isActive) {
+          return _buildTimelineItem(
+            status: statusTitle,
+            date: date,
+            isActive: isActive,
+            isFirst: allStatuses.first == status,
+            isLast: allStatuses.last == status,
+            isProblem: isProblem,
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      }).toList(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -281,7 +327,7 @@ class _DeliveryOrderStatusState extends State<DeliveryOrderStatus> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _getStatusDescription(_getCurrentStatus(_orderData!['completion_status'])),
+                      _getStatusDescription(_getCurrentStatus(_orderData?['completion_status'] ?? {})),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18.0,
@@ -289,26 +335,24 @@ class _DeliveryOrderStatusState extends State<DeliveryOrderStatus> {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    Text(
-                      'Deliver by ${_orderData!['shipping_date']}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16.0,
-                        fontFamily: 'Poppins_Medium',
+                    if (_orderData?['shipping_date'] != null)
+                      Text(
+                        'Deliver by ${_orderData!['shipping_date']}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.0,
+                          fontFamily: 'Poppins_Medium',
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 20),
-            // Container(
-            //   padding: const EdgeInsets.only(left: 20.0, right: 10.0),
-            //   child: Column(
-            //     crossAxisAlignment: CrossAxisAlignment.start,
-            //     children: _buildTimeline(),
-            //   ),
-            // ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: _buildCustomTimeline(),
+            ),
           ],
         ),
       ),
