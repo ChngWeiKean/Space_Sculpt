@@ -296,19 +296,19 @@ class _ARModelViewerState extends State<ARModelViewer> {
                 const Center(child: CircularProgressIndicator()),
 
               // FAB for screenshots
-              Positioned(
-                bottom: isLandscape ? null : 16.0,
-                top: isLandscape ? 16.0 : null,
-                right: isLandscape ? 96.0 : null,
-                left: isLandscape ? null : 16.0,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    saveScreenshot(context);
-                  },
-                  backgroundColor: Colors.cyanAccent,
-                  child: const Icon(Icons.camera_alt, color: Colors.white),
-                ),
-              ),
+              // Positioned(
+              //   bottom: isLandscape ? null : 16.0,
+              //   top: isLandscape ? 16.0 : null,
+              //   right: isLandscape ? 96.0 : null,
+              //   left: isLandscape ? null : 16.0,
+              //   child: FloatingActionButton(
+              //     onPressed: () {
+              //       saveScreenshot(context);
+              //     },
+              //     backgroundColor: Colors.cyanAccent,
+              //     child: const Icon(Icons.camera_alt, color: Colors.white),
+              //   ),
+              // ),
               Positioned(
                 right: isLandscape ? 0 : 0,
                 left: isLandscape ? 0 : null,
